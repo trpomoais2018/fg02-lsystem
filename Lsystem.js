@@ -36,6 +36,21 @@ function getDictonaryForDragon() {
     return alphabet;
 }
 
+function getDictonaryForHosper() {
+    let alphabet = {};
+    alphabet['F'] = "";
+    alphabet['L'] = "FL-FR--FR+FL++FLFL+FR-";
+    alphabet['R'] = "+FL-FRFR--FR-FL++FL+FR";
+    return alphabet;
+}
+
+function getDictonaryForSierpinski() {
+    let alphabet = {};
+    alphabet['A'] = "B-A-B";
+    alphabet['B'] = "A+B+A";
+    return alphabet;
+}
+
 function drawFractal(context, actionLine, alphabet) {
     context.beginPath();
     for (let i = 0; i < actionLine.length; i++) {

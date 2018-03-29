@@ -36,6 +36,22 @@
 			drawFractal(context, line, alphabet);
 		}
 
+		function showHosper() {
+			context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+			let line = buildLineFromLsystem(getDictonaryForHosper(), "FL", 6);
+			let alphabet = buildDictionaryWithActions(context, {x: window.innerWidth/4*3, y: window.innerHeight/4*3, angle: 0 }, 2, Math.PI/3);
+			drawFractal(context, line, alphabet);
+		}
+
+		function showSierpinski() {
+			context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+			let line = buildLineFromLsystem(getDictonaryForSierpinski(), "A", 8);
+			line = line.replace(new RegExp('A', 'g'), 'F');
+			line = line.replace(new RegExp('B', 'g'), 'F');
+			let alphabet = buildDictionaryWithActions(context, {x: window.innerWidth/4, y: window.innerHeight/4, angle: 0 }, 2, Math.PI/3);
+			drawFractal(context, line, alphabet);
+		}
+
 		function main() {
 			let canvas = document.getElementById("canvas");
 			canvas.setAttribute("Width", window.innerWidth);
@@ -51,6 +67,8 @@
 	<button onClick = "showSnowflake()">Снежинка</button>
 	<button onClick = "showKoch()">Снежинка коха</button>
 	<button onClick = "showDragon()">Дракон Хартера-Хейтвея</button>
+	<button onClick = "showHosper()">Кривая Госпера</button>
+	<button onClick = "showSierpinski()">Кривая Серпинского</button>
   	<canvas height='2000' width='2000' id='canvas'></canvas>
 </body>
 </html>
