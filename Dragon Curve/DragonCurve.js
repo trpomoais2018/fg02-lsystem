@@ -20,40 +20,35 @@ function toRadiance(degree) {
   return degree * Math.PI / 180;
 }
 
-function generate() {
-  currentSentence = sentences[sentences.length - 1];
-  var nextSentence = "";
-  for (var i = 0; i < currentSentence.length; i++) {
-    var currentChar = currentSentence.charAt(i);
-    var found = false;
-    for (var j = 0; j < keys.length; j++) {
-      if (currentChar === keys[j]) {
-        found = true;
-        nextSentence += rules[keys[j]];
-        break;
+function generate(n) {
+  for (var k = 0; k < n; k++) {
+    currentSentence = sentences[sentences.length - 1];
+    var nextSentence = "";
+    for (var i = 0; i < currentSentence.length; i++) {
+      var currentChar = currentSentence.charAt(i);
+      var found = false;
+      for (var j = 0; j < keys.length; j++) {
+        if (currentChar === keys[j]) {
+          found = true;
+          nextSentence += rules[keys[j]];
+          break;
+        }
       }
+      if (!found)
+        nextSentence += currentChar;
     }
-    if (!found)
-      nextSentence += currentChar;
+    sentences.push(nextSentence);
+    currentSentence = nextSentence;
   }
-  sentences.push(nextSentence);
-  currentSentence = nextSentence;
+  turtle(sentences[n]);
 }
 
-function turtle(n) {
-  if (sentences.length > n)
-    currentSentence = sentences[n];
-  else {
-    let len = sentences.length;
-    for (var j = 0; j < n - len + 1; j++) {
-      generate();
-    }
-  }
+function turtle(totalSentence) {
   sky.translate(600, 500);
   sky.lineWidth = "1";
   sky.strokeStyle = "green";
-  for (var i = 0; i < currentSentence.length; i++) {
-    var current = currentSentence.charAt(i);
+  for (var i = 0; i < totalSentence.length; i++) {
+    var current = totalSentence.charAt(i);
     if (current === "F") {
       sky.beginPath();
       sky.moveTo(0, 0);
@@ -67,4 +62,4 @@ function turtle(n) {
     }
   }
 }
-turtle(10);
+generate(10);
