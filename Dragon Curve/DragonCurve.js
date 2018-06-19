@@ -7,13 +7,15 @@ canvas.width = document.body.offsetWidth;
 canvas.height = window.innerHeight;
 var sky = canvas.getContext('2d');
 var length = 15;
-var axiome = "FX";
+var axiome = "[FX]";
 var currentSentence = axiome;
 var sentences = [axiome];
+
 var rules = {
   "X": "X+YF+"
   , "Y": "-FX-Y"
 }
+
 var keys = Object.keys(rules);
 
 function toRadiance(degree) {
@@ -40,25 +42,32 @@ function generate(n) {
     sentences.push(nextSentence);
     currentSentence = nextSentence;
   }
-  turtle(sentences[n]);
+  turtle(sentences[n],{x: 0, y: 0, angle: 0 },90);
 }
 
-function turtle(totalSentence) {
-  sky.translate(600, 500);
+function turtle(totalSentence, startPosition, angle) {
+  let position = startPosition;
+  var stack = [];
+  sky.translate(800, 200);
   sky.lineWidth = "1";
   sky.strokeStyle = "green";
   for (var i = 0; i < totalSentence.length; i++) {
     var current = totalSentence.charAt(i);
     if (current === "F") {
       sky.beginPath();
-      sky.moveTo(0, 0);
-      sky.lineTo(0, -length);
-      sky.translate(0, -length);
+      sky.moveTo(position.x, position.y);
+      position.x += Math.cos(position.angle* Math.PI/180) * length;
+      position.y += Math.sin(position.angle* Math.PI/180) * length;
+      sky.lineTo(position.x, position.y);
       sky.stroke();
     } else if (current === "+") {
-      sky.rotate(toRadiance(90));
+      position.angle += angle;
     } else if (current === "-") {
-      sky.rotate(toRadiance(-90));
+      position.angle -= angle;
+    } else if (current === "[") {
+      stack.push({ x: position.x, y: position.y, angle: position.angle });
+    } else if (current === "]") {
+      position = stack.pop();
     }
   }
 }
