@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+
+    <script>
+        function lSystem(axiom, rule, n) {
+            let str = "";
+            for (var i = 0; i < n; i++) {
+                str = "";
+                for (var smb of axiom) {
+                    if (smb == "F")
+                        str += rule;
+                    else
+                        str += smb;
+                }
+                axiom = str;
+            }
+            return axiom;
+        }
+
+        function draw(dataPoint, s, q, newAxiom) {
+            let canvas = document.getElementById("lsystem");
+            let canvasHeight = parseInt(canvas.getAttribute("height"));
+            let canvasWidth = parseInt(canvas.getAttribute("width"));
+            let context = canvas.getContext('2d');
+            context.lineWidth = "1";
+            context.strokeStyle = "0000FF";
+            let stack = [];
+            for (let i = 0; i < newAxiom.length; i++) {
+                switch (newAxiom[i]) {
+                    case "F":
+                        drawLine(context, s, dataPoint);
+                        break;
+                    case "[":
+                        stack.push({x: dataPoint.x, y: dataPoint.y, angle: dataPoint.angle})
+                        break;
+                    case "]":
+                        var tmp = stack.pop();
+                        dataPoint.x = tmp.x;
+                        dataPoint.y = tmp.y;
+                        dataPoint.angle = tmp.angle;
+                        context.moveTo(dataPoint.x, dataPoint.y);
+                        break;
+                    case "+":
+                        dataPoint.angle += q;
+                        break;
+                    case "-":
+                        dataPoint.angle -= q;
+                        break;
+                }
+            }
+        }
+
+        function drawLine(context, s, dataPoint) {
+            context.beginPath();
+            context.moveTo(dataPoint.x, dataPoint.y);
+            dataPoint.x += s * Math.cos(dataPoint.angle * Math.PI / 180);
+            dataPoint.y += s * Math.sin(dataPoint.angle * Math.PI / 180);
+            context.lineTo(dataPoint.x, dataPoint.y);
+            context.stroke();
+        }
+
+        function run() {
+            let fractal = prompt("1-куст,2-снежинка");
+            if (fractal == "1") {
+                let q = 180 / 8;
+                let s = 7;
+                let dataPoint = {x: 500, y: 500, angle: 0};
+                let n = 5;
+                new draw(dataPoint, s, q, lSystem("F", "-F+F+[+F-F-]-[-F+F+F]", n));
+            } else {
+                let q = 180 / 3;
+                let s = 2;
+                let n = 3;
+                let dataPoint = {x: 500, y: 500, angle: 0};
+                new draw(dataPoint, s, q, lSystem("[F]+[F]+[F]+[F]+[F]+[F]", "F F[+FF][-FF]FF[+F][-F]FF", n));
+            }
+        }
+
+    </script>
+</head>
+<body onload="run()">
+<canvas height='1000' width='1500' id='lsystem'></canvas>
+</body>
+</html>
