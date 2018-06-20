@@ -1,110 +1,163 @@
 <!doctype html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta http-equiv="Cache-Control" content="no-cache"/>
-	
-	<script>
-		//пример рисования произвольного множества точек
-		function example1() {
-			//получаем html-элемент типа canvas и его характеристики
-			var canvas = document.getElementById("canvas1");
-			var canvasHeight = parseInt(canvas.getAttribute("height"));
-			var canvasWidth = parseInt(canvas.getAttribute("width"));
-			
-			//создаем 2d context
-			var context = canvas.getContext('2d');
-			
-			//создаем "буфер" imageData, в который будем класть новую информацию о цветах
-			var imageData = context.createImageData(canvasWidth, canvasHeight);
-			for (var i = 0; i < canvasWidth; i++) {
-				for (var j = 0; j < canvasHeight; j++) {
-					var red = 0;
-					var green = 0;
-					var blue = (i + j) % 255;
-					if (i % 20 == 0)
-						red = 150;
-					if (j % 20 == 0)
-						green = 150;
-					var opacity = 255;
-					
-					imageData.data[4*(i + canvasWidth*j) + 0] = red;
-					imageData.data[4*(i + canvasWidth*j) + 1] = green;
-					imageData.data[4*(i + canvasWidth*j) + 2] = blue;
-					imageData.data[4*(i + canvasWidth*j) + 3] = opacity;
-				}
-			}
-			//заполненный "буфер" imageData передаем в context для вывода на экран
-			context.putImageData(imageData, 0, 0);
-		}
-		
-		//пример рисования отдельных линий
-		function example2() {
-			//получаем html-элемент типа canvas и его характеристики
-			var canvas = document.getElementById("canvas2");
-			var canvasHeight = parseInt(canvas.getAttribute("height"));
-			var canvasWidth = parseInt(canvas.getAttribute("width"));
-			
-			//создаем 2d context
-			var context = canvas.getContext('2d');
-			
-			//задаем стиль линий
-			context.lineWidth = "5";
-			context.strokeStyle = "green";
-			
-			//начинаем создание нового пути
-			context.beginPath(); 
-			//задаем начальную точку линии
-			context.moveTo(0, 75);
-			//задаем конечную точку линии и добавляем линию в путь
-			context.lineTo(150, 100);
-			//выводим путь на экран
-			context.stroke();
-		}
-		
-		//пример рисования полилиний (сначала вычисляем точки, затем рисуем)
-		function example3() {
-			//получаем html-элемент типа canvas и его характеристики
-			var canvas = document.getElementById("canvas3");
-			var canvasHeight = parseInt(canvas.getAttribute("height"));
-			var canvasWidth = parseInt(canvas.getAttribute("width"));
-			
-			//создаем 2d context
-			var context = canvas.getContext('2d');
-			
-			//задаем стиль линий
-			context.lineWidth = "2";
-			context.strokeStyle = "#FF0000";
-			
-			//создаем массив точек
-			//в качестве точек используются анонимные объекты со свойствами x и y
-			var points = [{x: 20, y: 50}, {x: 120, y: 50}, {x: 120, y: 100}, {x: 50, y: 20}];
-			
-			//начинаем создание нового пути
-			context.beginPath(); 
-			//добавляем в путь все точки из массива
-			for (var i = 0; i < points.length; i++) {
-				var point = points[i];
-			    if (i == 0)
-					context.moveTo(point.x, point.y);
-				else
-					context.lineTo(point.x, point.y);
-			}
-			//выводим путь на экран
-			context.stroke();
-		}
-		
-		//вызывается после загрузки body
-		function run () {
-			example1();
-			example2();
-			example3();
-		}
-	</script>
 
-<body onload="run()">
-  <canvas height='200' width='200' id='canvas1'></canvas>
-  <canvas height='200' width='200' id='canvas2'></canvas>
-  <canvas height='200' width='200' id='canvas3'></canvas>
+<head>
+  <title>L система</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+    body {
+      font-size: 14px;
+    }
+
+    label {
+      float: left;
+      padding-right: 10px;
+    }
+
+    .field {
+      clear: both;
+      text-align: right;
+      line-height: 25px;
+    }
+
+    .main {
+      position: relative;
+      float: left;
+      top: 0px;
+    }
+
+    .picture {
+      position: rigth;
+      left: +30%;
+    }
+  </style>
+  <script type="text/javascript" charset="UTF-8"></script>
+</head>
+
+<body>
+  <div class="main">
+    <div class="field">
+      <label for="axiom">аксиома</label>
+      <input id="axiom">
+    </div>
+    <div class="field">
+      <label for="newF">правило преобразования</label>
+      <input id="newF">
+    </div>
+    <div class="field">
+      <label for="n">количество итераций</label>
+      <input id="n">
+    </div>
+    <div class="field">
+      <label for="position_and_direction">начальное положение</label>
+      <input id="position_and_direction">
+    </div>
+    <div class="field">
+      <label for="s">длина шага</label>
+      <input id="s">
+    </div>
+    <div class="field">
+      <label for="q">изменение угла</label>
+      <input id="q">
+    </div>
+    <div class="field">
+      <input id="elem" type="button" value="generate" />
+    </div>
+    <div class="label">
+      <label>
+        <h>
+          <b>Снежинка</b>
+        </h>
+        <p>аксиома [F]+[F]+[F]+[F]+[F]+[F]</p>
+        <p>новое правило: F[+FF][-FF]FF[+F][-F]FF</p>
+        <p>начальное положение: 200 200</p>
+        <p>длина: 30, изменение угла: 60</p>
+        <h>
+          <b>Куст</b>
+        </h>
+        <p>аксиома F</p>
+        <p>новое правило: FF+[+F-F-F]-[-F+F+F]</p>
+        <p>начальное положение: 200 400</p>
+        <p>длина: 300, изменение угла: 22</p>
+        <p>итерации: 3 в 1 , 4 во 2</p>
+      </label>
+    </div>
+  </div>
+
+  <div class="picture">
+    <canvas height='400' width='400' id='canvas1'></canvas>
+  </div>
+
+  <script>
+
+    var sentence;
+    var length = 100;
+
+    elem.onclick = function () {
+      var axiom = document.getElementById("axiom").value;
+      var newF = document.getElementById("newF").value.split();
+      var rules = [];
+      rules[0] = {
+        a: "F",
+        b: newF
+      }
+      sentence = axiom;
+      var n = document.getElementById("n").value;
+      length = document.getElementById("s").value;
+      var input = document.getElementById("position_and_direction").value.split(' ');
+      var position = { x: input[0], y: input[1] }
+      angle = document.getElementById("q").value * Math.PI / 180;
+      for (var i = 0; i < n; i++) {
+        generate(axiom, rules);
+      }
+      turtle(position, angle);
+    }
+
+    function generate(axiom, rules) {
+      length *= 0.36;
+      var nextSentence = "";
+      for (var i = 0; i < sentence.length; i++) {
+        var current = sentence.charAt(i);
+        var found = false;
+        for (var j = 0; j < rules.length; j++) {
+          if (current == rules[j].a) {
+            found = true;
+            nextSentence += rules[j].b;
+            break;
+          }
+        }
+        if (!found) {
+          nextSentence += current;
+        }
+      }
+      sentence = nextSentence;
+    }
+
+    function turtle(position, angle) {
+      var canvas = document.getElementById("canvas1");
+      var context = canvas.getContext('2d');
+      context.translate(position.x, position.y);
+      context.beginPath();
+      for (var i = 0; i < sentence.length; i++) {
+        var current = sentence.charAt(i);
+
+        if (current == "F") {
+          context.translate(0, -length);
+          context.lineTo(0, -length);
+        } else if (current == "+") {
+          context.rotate(angle);
+        } else if (current == "-") {
+          context.rotate(-angle);
+        } else if (current == "[") {
+          context.save();
+        } else if (current == "]") {
+          context.restore();
+        }
+      }
+      context.stroke();
+      context.restore();
+    }
+  </script>
 </body>
+
 </html>
