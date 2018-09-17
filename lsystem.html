@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <script>
+        function run() {
+            var canvas = document.getElementById("canvas1");
+            var canvasHeight = parseInt(canvas.getAttribute("height"));
+            var canvasWidth = parseInt(canvas.getAttribute("width"));
+            var context = canvas.getContext('2d');
+            context.lineWidth = "1";
+            context.strokeStyle = "black";
+
+            var n = 3;
+            var q = 180 / 3;
+            var s = 2;
+            var point = { x: 250, y: 450, a: 0 };
+            var alg = LSystem("[F]+[F]+[F]+[F]+[F]+[F]", ["F F[+FF][-FF]FF[+F][-F]FF"], n);
+            Painter(point, s, q, alg, context);
+
+            n = 4;
+            q = 180 / 8;
+            s = 10;
+            point = { x: 700, y: 650, a: 250 };
+            alg = LSystem("F", ["F -F+F+[+F-F-]-[-F+F+F]"], n);            
+            Painter(point, s, q,alg,context);
+
+        }
+        function LSystem(axiom, rules, n) {
+            var result = axiom;
+            for (var i = 0; i < n; i++) {
+                result = apply(result, rules);
+            }
+            return result;
+        }
+
+        function getFollower(sym, rules) {
+            for (var i = 0; i < rules.length; i++) {
+                var tmp = rules[i].charAt(0);
+                if (tmp == sym) {
+                    var result = rules[i].substring(2, rules[i].length);
+                    return result;
+                }
+            }
+            return sym;
+        }
+        function apply(string, rules) {
+            var result = "";
+            var n = string.length;
+            for (var i = 0; i < n; i++) {
+                var a = getFollower(string[i], rules);
+                result = result + a;
+            }
+            return result;
+        }
+        function Painter(paint, lenStep, angle, alg, context) {
+            var p = paint;
+            var s = lenStep;
+            var q = angle;
+            context.beginPath();
+            context.moveTo(p.x, p.y);
+            var stack = [];
+            for (var i = 0; i < alg.length; i++) {
+                switch (alg.charAt(i)) {
+                    case 'F':
+                        p.x -= s * Math.cos(-p.a * Math.PI / 180);
+                        p.y -= s * Math.sin(-p.a * Math.PI / 180);
+                        context.lineTo(p.x, p.y);
+                        break;
+                    case '+':
+                        p.a -= q;
+                        break;
+                    case '-':
+                        p.a += q;
+                        break;
+                    case '[':
+                        stack.push({ x: p.x, y: p.y, a: p.a })
+                        break;
+                    case ']':
+                        var tmp = stack.pop();
+                        p.x = tmp.x;
+                        p.y = tmp.y;
+                        p.a = tmp.a;
+                        context.moveTo(p.x, p.y);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            context.stroke();
+
+        }
+
+    </script>
+    <body onload="run()">
+        <canvas height='900' width='900' id='canvas1'></canvas>
+    </body>
+
+</html>
